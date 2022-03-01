@@ -1,0 +1,15 @@
+.moviesList {
+	width: 85%;
+	margin-inline: auto;
+	row-gap: rem(75);
+	font-size: rem(75);
+	font-weight: 700;
+	position: relative;
+	top: rem(80);
+
+	img {
+		width: rem(175);
+		display: block;
+		position: relative;
+	}
+}
