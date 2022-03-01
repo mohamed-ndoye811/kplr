@@ -1,49 +1,32 @@
 import React, { useState, useEffect } from "react";
-
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 import "./Home.scss";
 
 import { Image } from "../../components";
 
-const Home = () => {
-	const API_KEY = "ea5c3a5692af9180386440a6d3bd8c6e";
-	const req = "https://api.themoviedb.org/3/trending/movie/day";
-
-	const [movies, setMovies] = useState([]);
-
-	useEffect(() => {
-		fetch(`${req}?api_key=${API_KEY}`)
-			.then((res) => res.json())
-			.then(
-				(result) => {
-					setMovies(result.results);
-				},
-
-				// Remarque : il est important de traiter les erreurs ici
-				// au lieu d'utiliser un bloc catch(), pour ne pas passer à la trappe
-				// des exceptions provenant de réels bugs du composant.
-				(error) => {
-					this.setState({
-						isLoaded: true,
-						error,
-					});
-				}
-			);
-	}, []);
-
+const Home = ({ movies }) => {
 	const transition = {
-		duration: 3,
+		duration: 1.2,
 		ease: [0.2, 0.5, 0.2, 1],
 	};
 
 	const imagesVariants = {
 		animate: {
-			...transition,
 			opacity: 1,
+			y: 0,
+			transition: {
+				...transition,
+			},
 		},
 		initial: {
 			opacity: 0,
+			y: 50,
+		},
+		exit: {
+			opacity: 0,
+			y: 50,
 		},
 	};
 
@@ -52,9 +35,11 @@ const Home = () => {
 			opacity: 1,
 			transition: {
 				when: "beforeChildren",
-				staggerChildren: 0.1,
+				staggerChildren: 0.05,
+				delay: 1,
 			},
 		},
+		exit: { opacity: 0, transition: { ...transition } },
 	};
 
 	return (
@@ -62,28 +47,24 @@ const Home = () => {
 			className='moviesList'
 			initial='initial'
 			animate='animate'
+			exit='exit'
 			variants={gridVariants}>
 			{movies.map((movie, index) => {
-				console.log(typeof movie.title);
 				return (
-					<motion.div key={index} variants={imagesVariants}>
-						<ImageBlock id='image-3' />
-					</motion.div>
+					<motion.span key={index} variants={imagesVariants}>
+						<img src={"https://image.tmdb.org/t/p/w500" + movie.poster_path} />
+					</motion.span>
 				);
 			})}
 		</motion.div>
 	);
 };
 
-export const ImageBlock = ({ id }) => {
+export const ImageBlock = ({ url, id, variants }) => {
 	return (
-		<div className={`image-block ${id}`}>
-			<Image
-				src={process.env.PUBLIC_URL + `/images/${id}.webp`}
-				fallback={process.env.PUBLIC_URL + `/images/${id}.jpg`}
-				alt={id}
-			/>
-		</div>
+		<motion.div className={`image-block ${id}`} variants={variants}>
+			<Image src={url} alt={id} />
+		</motion.div>
 	);
 };
 
